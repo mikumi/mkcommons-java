@@ -77,7 +77,7 @@ public class Log {
 	public static void info(final String message)
 	{
 		if (logLevel.isAtLeast(Level.INFO)) {
-			System.out.println("[" + Level.INFO.toString() + "] <" + getCallerInformation() + "> " + message);
+			System.out.println("<" + getCallerInformation() + "> " + message);
 		}
 	}
 
@@ -89,7 +89,7 @@ public class Log {
 	public static void debug(final String message)
 	{
 		if (logLevel.isAtLeast(Level.DEBUG)) {
-			System.out.println("[" + Level.DEBUG.toString() + "] <" + getCallerInformation() + "> " + message);
+			System.out.println("<" + getCallerInformation() + "> " + message);
 		}
 	}
 
@@ -101,7 +101,7 @@ public class Log {
 	public static void verbose(final String message)
 	{
 		if (logLevel.isAtLeast(Level.VERBOSE)) {
-			System.out.println("[" + Level.VERBOSE.toString() + "] <" + getCallerInformation() + "> " + message);
+			System.out.println("<" + getCallerInformation() + "> " + message);
 		}
 	}
 
@@ -111,10 +111,10 @@ public class Log {
 	private static String getCallerInformation()
 	{
 		// 0 is current Thread, 1 is this method, 2 is log method, 3 is original calling method
-		StackTraceElement element = Thread.currentThread().getStackTrace()[3];
-		int lineNumber = element.getLineNumber();
-		String classNameParts[] = element.getClassName().split("\\.");
-		String className = classNameParts[classNameParts.length - 1];
+		final StackTraceElement element = Thread.currentThread().getStackTrace()[3];
+		final int lineNumber = element.getLineNumber();
+		final String classNameParts[] = element.getClassName().split("\\.");
+		final String className = classNameParts[classNameParts.length - 1];
 		return className + ":" + lineNumber;
 	}
 
