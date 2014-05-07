@@ -18,6 +18,7 @@ public class MySqlSelectStatementBuilder {
 	final private ArrayList<String> selectFields;
 	final private String tableName;
 	final private HashMap<String, String> whereFields;
+	final private HashMap<String, String> whereNotFields;
 
 	/**
 	 * @param tableName
@@ -27,6 +28,7 @@ public class MySqlSelectStatementBuilder {
 		this.selectFields = new ArrayList<String>();
 		this.tableName = tableName;
 		this.whereFields = new HashMap<String, String>();
+		this.whereNotFields = new HashMap<String, String>();
 	}
 
 	/**
@@ -43,7 +45,7 @@ public class MySqlSelectStatementBuilder {
 	public void addSelectFields(final String[] fieldNames)
 	{
 		for (final String fieldName : fieldNames) {
-			this.selectFields.add(fieldName);
+			addSelectField(fieldName);
 		}
 	}
 
@@ -61,13 +63,37 @@ public class MySqlSelectStatementBuilder {
 	 */
 	public void addWhereFieldWithPlaceholder(final String fieldName)
 	{
-		this.whereFields.put(fieldName, PLACEHOLDER);
+		addWhereField(fieldName, PLACEHOLDER);
 	}
 
 	public void addWhereFieldsWithPlaceholder(final String[] fieldNames)
 	{
 		for (final String fieldname : fieldNames) {
-			this.whereFields.put(fieldname, PLACEHOLDER);
+			addWhereField(fieldname, PLACEHOLDER);
+		}
+	}
+	
+	/**
+	 * @param fieldName
+	 * @param fieldValue
+	 */
+	public void addWhereNotField(final String fieldName, final String fieldValue)
+	{
+		this.whereNotFields.put(fieldName, "'" + fieldValue + "'");
+	}
+
+	/**
+	 * @param fieldName
+	 */
+	public void addWhereNotFieldWithPlaceholder(final String fieldName)
+	{
+		addWhereNotField(fieldName, PLACEHOLDER);
+	}
+
+	public void addWhereNotFieldsWithPlaceholder(final String[] fieldNames)
+	{
+		for (final String fieldname : fieldNames) {
+			addWhereNotField(fieldname, PLACEHOLDER);
 		}
 	}
 
@@ -102,6 +128,24 @@ public class MySqlSelectStatementBuilder {
 				final Map.Entry<String, String> entry = it.next();
 				statementStringBuilder.append(entry.getKey());
 				statementStringBuilder.append("=");
+				statementStringBuilder.append(entry.getValue());
+				if (it.hasNext()) {
+					statementStringBuilder.append(" AND ");
+				}
+
+			}
+		}
+		if (this.whereNotFields.size() > 0) {
+			if (this.whereFields.size() > 0) {
+				statementStringBuilder.append(" AND ");
+			} else {
+				statementStringBuilder.append(" WHERE ");
+			}
+			final Iterator<Map.Entry<String, String>> it = this.whereNotFields.entrySet().iterator();
+			while (it.hasNext()) {
+				final Map.Entry<String, String> entry = it.next();
+				statementStringBuilder.append(entry.getKey());
+				statementStringBuilder.append("!=");
 				statementStringBuilder.append(entry.getValue());
 				if (it.hasNext()) {
 					statementStringBuilder.append(" AND ");
