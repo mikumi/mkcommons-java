@@ -3,10 +3,15 @@
  */
 package com.michael_kuck.commons.mysql;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
+import com.michael_kuck.commons.Log;
 
 /**
  * @author michaelkuck
@@ -19,6 +24,7 @@ public class MySqlSelectStatementBuilder {
 	final private String tableName;
 	final private HashMap<String, String> whereFields;
 	final private HashMap<String, String> whereNotFields;
+	private int rowLimit;
 
 	/**
 	 * @param tableName
@@ -29,6 +35,7 @@ public class MySqlSelectStatementBuilder {
 		this.tableName = tableName;
 		this.whereFields = new HashMap<String, String>();
 		this.whereNotFields = new HashMap<String, String>();
+		this.setRowLimit(0);
 	}
 
 	/**
@@ -55,52 +62,32 @@ public class MySqlSelectStatementBuilder {
 	 */
 	public void addWhereField(final String fieldName, final String fieldValue)
 	{
-		this.whereFields.put(fieldName, "'" + fieldValue + "'");
-	}
-
-	/**
-	 * @param fieldName
-	 */
-	public void addWhereFieldWithPlaceholder(final String fieldName)
-	{
-		addWhereField(fieldName, PLACEHOLDER);
-	}
-
-	public void addWhereFieldsWithPlaceholder(final String[] fieldNames)
-	{
-		for (final String fieldname : fieldNames) {
-			addWhereField(fieldname, PLACEHOLDER);
+		if (fieldValue.equals(PLACEHOLDER)) {
+			Log.error("Placeholder will automatically be used and cannot be added manually.");
+		} else {
+			final String value = fieldValue;
+			this.whereFields.put(fieldName, value);
 		}
 	}
-	
+
 	/**
 	 * @param fieldName
 	 * @param fieldValue
 	 */
 	public void addWhereNotField(final String fieldName, final String fieldValue)
 	{
-		this.whereNotFields.put(fieldName, "'" + fieldValue + "'");
-	}
-
-	/**
-	 * @param fieldName
-	 */
-	public void addWhereNotFieldWithPlaceholder(final String fieldName)
-	{
-		addWhereNotField(fieldName, PLACEHOLDER);
-	}
-
-	public void addWhereNotFieldsWithPlaceholder(final String[] fieldNames)
-	{
-		for (final String fieldname : fieldNames) {
-			addWhereNotField(fieldname, PLACEHOLDER);
+		if (fieldValue.equals(PLACEHOLDER)) {
+			Log.error("Placeholder will automatically be used and cannot be added manually.");
+		} else {
+			final String value = fieldValue;
+			this.whereNotFields.put(fieldName, value);
 		}
 	}
 
 	/**
 	 * @return
 	 */
-	public String getStatement()
+	public String getUnpreparedStatementString()
 	{
 		final StringBuilder statementStringBuilder = new StringBuilder(100);
 		// select
@@ -128,7 +115,7 @@ public class MySqlSelectStatementBuilder {
 				final Map.Entry<String, String> entry = it.next();
 				statementStringBuilder.append(entry.getKey());
 				statementStringBuilder.append("=");
-				statementStringBuilder.append(entry.getValue());
+				statementStringBuilder.append(PLACEHOLDER);
 				if (it.hasNext()) {
 					statementStringBuilder.append(" AND ");
 				}
@@ -146,14 +133,38 @@ public class MySqlSelectStatementBuilder {
 				final Map.Entry<String, String> entry = it.next();
 				statementStringBuilder.append(entry.getKey());
 				statementStringBuilder.append("!=");
-				statementStringBuilder.append(entry.getValue());
+				statementStringBuilder.append(PLACEHOLDER);
 				if (it.hasNext()) {
 					statementStringBuilder.append(" AND ");
 				}
 
 			}
 		}
+		if (this.rowLimit > 0) {
+			statementStringBuilder.append(" LIMIT ");
+			statementStringBuilder.append(this.rowLimit);
+		}
 		return statementStringBuilder.toString();
+	}
+
+	/**
+	 * @param connection
+	 * @return
+	 * @throws SQLException 
+	 */
+	public PreparedStatement getPreparedStatement(Connection connection) throws SQLException
+	{
+		final PreparedStatement statement = connection.prepareStatement(getUnpreparedStatementString());
+		int parameterIndex = 1;
+		for (String value : whereFields.values()) {
+			statement.setString(parameterIndex, value);
+			parameterIndex = parameterIndex + 1;
+		}
+		for (String value : whereNotFields.values()) {
+			statement.setString(parameterIndex, value);
+			parameterIndex = parameterIndex + 1;
+		}
+		return statement;
 	}
 
 	/*
@@ -164,7 +175,24 @@ public class MySqlSelectStatementBuilder {
 	@Override
 	public String toString()
 	{
-		return this.getStatement();
+		return this.getUnpreparedStatementString();
+	}
+
+	/**
+	 * @return the rowLimit
+	 */
+	public int getRowLimit()
+	{
+		return rowLimit;
+	}
+
+	/**
+	 * @param rowLimit
+	 *            the rowLimit to set
+	 */
+	public void setRowLimit(int rowLimit)
+	{
+		this.rowLimit = rowLimit;
 	}
 
 }
