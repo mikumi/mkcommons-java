@@ -3,10 +3,10 @@
  */
 package com.michael_kuck.commons.mysql;
 
+import com.michael_kuck.commons.Log;
+
 import java.sql.Connection;
 import java.util.ArrayList;
-
-import com.michael_kuck.commons.Log;
 
 /**
  * @author michaelkuck
@@ -40,8 +40,8 @@ public class MySqlConnectionManager {
 		this.password = password;
 		this.database = database;
 
-		this.connectionPool = new ArrayList<Connection>();
-	}
+        this.connectionPool = new ArrayList<>();
+    }
 
 	/*
 	 * (non-Javadoc)
@@ -65,9 +65,12 @@ public class MySqlConnectionManager {
 	{
 		final Connection connection;
 		if (this.connectionPool.size() > 0) {
-			connection = this.connectionPool.get(0);
-			this.connectionPool.remove(0);
-		} else {
+            // The reason why we want to use the most recent one is that older connections might have expired and need
+            // to (automatically) reconnect first.
+            final int index = this.connectionPool.size() - 1;
+            connection = this.connectionPool.get(index);
+            this.connectionPool.remove(index);
+        } else {
 			connection = MySqlHelper
 					.getNewConnection(this.host, this.port, this.username, this.password, this.database);
 		}
