@@ -1,4 +1,7 @@
 bin/
+out/
 .DS_Store
 
-org.eclipse.jdt.core.prefs
+*.class
+workspace.xml
+tasks.xml
