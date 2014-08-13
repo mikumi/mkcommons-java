@@ -12,6 +12,9 @@
 package com.michael_kuck.commons;
 
 import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  * Created by michaelkuck on 8/4/14.
@@ -45,6 +48,11 @@ public class FileUtil {
                 Log.error("Failed to close handle: " + e.getLocalizedMessage());
             }
         }
+    }
+
+    public static String stringFromFile(String filename, Charset charset) throws IOException {
+        final byte[] bytes = Files.readAllBytes(Paths.get(filename));
+        return new String(bytes, charset);
     }
 
 }
