@@ -3,7 +3,7 @@
  */
 package com.michael_kuck.commons.mysql;
 
-import com.michael_kuck.commons.Log;
+import com.michael_kuck.commons.log.Log;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
