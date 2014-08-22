@@ -1,0 +1,20 @@
+/*
+ *
+ * This file is part of MKCommons-Java
+ *
+ * Unless otherwise stated in a separate LICENSE file for this project
+ * or agreed via contract, all rights reserved by the author.
+ *
+ */
+
+apply plugin: 'java'
+
+// This is for Android compatibility. Not using gradle for "normal" java projects anyway.
+compileJava {
+    sourceCompatibility = 1.6
+    targetCompatibility = 1.6
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+}
