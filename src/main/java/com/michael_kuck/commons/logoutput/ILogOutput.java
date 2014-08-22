@@ -7,9 +7,9 @@
  *
  */
 
-package com.michael_kuck.commons.log;
+package com.michael_kuck.commons.logoutput;
 
-public interface ILogging {
+public interface ILogOutput {
 
     /**
      * Log an error.

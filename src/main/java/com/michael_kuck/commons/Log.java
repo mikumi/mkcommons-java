@@ -7,7 +7,10 @@
  *
  */
 
-package com.michael_kuck.commons.log;
+package com.michael_kuck.commons;
+
+import com.michael_kuck.commons.logoutput.ConsoleLogOutput;
+import com.michael_kuck.commons.logoutput.ILogOutput;
 
 public class Log {
 
@@ -20,7 +23,7 @@ public class Log {
 
     }
 
-    private static ILogging logging = new ConsoleLogging();
+    private static ILogOutput logging = new ConsoleLogOutput();
 
     /**
      * The level of information to be logged.
@@ -47,7 +50,7 @@ public class Log {
         return logLevel;
     }
 
-    public static ILogging getLogging() {
+    public static ILogOutput getLogging() {
         return logging;
     }
 
@@ -55,7 +58,7 @@ public class Log {
      * Set the actual logging implementation, e.g. Console or Android Logcat
      * @param logging
      */
-    public static void setLogging(final ILogging logging) {
+    public static void setLogging(final ILogOutput logging) {
         Log.logging = logging;
     }
 

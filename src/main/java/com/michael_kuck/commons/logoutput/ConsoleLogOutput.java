@@ -1,7 +1,9 @@
 /**
  *
  */
-package com.michael_kuck.commons.log;
+package com.michael_kuck.commons.logoutput;
+
+import com.michael_kuck.commons.Log;
 
 /**
  * Simple application trace with different logging levels.
@@ -9,9 +11,9 @@ package com.michael_kuck.commons.log;
  *
  * @author michaelkuck
  */
-public class ConsoleLogging implements ILogging {
+public class ConsoleLogOutput implements ILogOutput {
 
-    public ConsoleLogging() {
+    public ConsoleLogOutput() {
     }
 
     @Override

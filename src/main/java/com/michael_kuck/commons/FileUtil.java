@@ -11,8 +11,6 @@
 
 package com.michael_kuck.commons;
 
-import com.michael_kuck.commons.log.Log;
-
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
